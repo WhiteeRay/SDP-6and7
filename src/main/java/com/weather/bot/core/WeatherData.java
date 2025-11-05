@@ -1,4 +1,4 @@
-package core;
+package com.weather.bot.core;
 
 import java.time.LocalDateTime;
 

@@ -1,11 +1,13 @@
-package strategies;
+package com.weather.bot.strategies;
 
-import core.WeatherData;
+import org.springframework.stereotype.Component;
+import com.weather.bot.core.WeatherData;
 
+@Component
 public class RealTimeUpdateStrategy implements UpdateStrategy {
     @Override
     public WeatherData fetchWeatherData() {
-        System.out.println("Polling real-time sensors...");
+        // Remove the System.out.println for cleaner output
         double temperature = 20 + (Math.random() * 10);
         double humidity = 40 + (Math.random() * 30);
         double pressure = 1013 + (Math.random() * 10);

@@ -1,7 +1,9 @@
-package observers;
+package com.weather.bot.observers;
 
-import core.WeatherData;
+import org.springframework.stereotype.Component;
+import com.weather.bot.core.WeatherData;
 
+@Component
 public class SmartHomeSystem implements WeatherObserver {
     @Override
     public void update(WeatherData weatherData) {

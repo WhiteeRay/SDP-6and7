@@ -1,7 +1,7 @@
-package core;
+package com.weather.bot.core;
 
-import strategies.UpdateStrategy;
-import observers.WeatherObserver;
+import com.weather.bot.strategies.UpdateStrategy;
+import com.weather.bot.observers.WeatherObserver;
 import java.util.ArrayList;
 import java.util.List;
 

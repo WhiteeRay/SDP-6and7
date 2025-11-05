@@ -1,7 +1,9 @@
-package strategies;
+package com.weather.bot.strategies;
 
-import core.WeatherData;
+import org.springframework.stereotype.Component;
+import com.weather.bot.core.WeatherData;
 
+@Component
 public class ScheduledUpdateStrategy implements UpdateStrategy {
     private int updateCount = 0;
     private final WeatherData[] cachedData = {

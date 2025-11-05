@@ -1,6 +1,6 @@
-package strategies;
+package com.weather.bot.strategies;
 
-import core.WeatherData;
+import com.weather.bot.core.WeatherData;
 
 public interface UpdateStrategy {
     WeatherData fetchWeatherData();

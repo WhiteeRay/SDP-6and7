@@ -1,12 +1,14 @@
-package observers;
+package com.weather.bot.observers;
 
-import core.WeatherData;
+import org.springframework.stereotype.Component;
+import com.weather.bot.core.WeatherData;
 
+@Component
 public class DesktopDisplay implements WeatherObserver {
     private final String location;
 
-    public DesktopDisplay(String location) {
-        this.location = location;
+    public DesktopDisplay() {
+        this.location = "Living Room";
     }
 
     @Override
