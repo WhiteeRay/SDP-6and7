@@ -10,15 +10,15 @@ import java.util.Set;
 
 @Service
 public class TelegramService {
-    private TelegramBotController botController; // Remove final
+    private TelegramBotController botController;
     private final Set<Long> subscribers;
 
-    // Remove constructor injection, use setter injection
+
     public TelegramService() {
         this.subscribers = new HashSet<>();
     }
 
-    // Setter injection for TelegramBotController
+
     public void setBotController(TelegramBotController botController) {
         this.botController = botController;
     }

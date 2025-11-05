@@ -27,7 +27,7 @@ public class TelegramBotController extends TelegramLongPollingBot {
     private final ManualUpdateStrategy manualStrategy;
     private final TelegramService telegramService;
 
-    // Remove @Lazy, use normal injection
+
     public TelegramBotController(WeatherService weatherService,
                                  ManualUpdateStrategy manualStrategy,
                                  TelegramService telegramService) {
@@ -38,7 +38,7 @@ public class TelegramBotController extends TelegramLongPollingBot {
 
     @PostConstruct
     public void init() {
-        // Initialize the circular dependency manually
+
         telegramService.setBotController(this);
 
         try {
@@ -112,16 +112,16 @@ public class TelegramBotController extends TelegramLongPollingBot {
 
                 case "/subscribe":
                     weatherService.subscribeTelegram(chatId);
-                    response.setText("✅ Subscribed to weather updates! You'll receive regular weather updates.");
+                    response.setText(" Subscribed to weather updates! You'll receive regular weather updates.");
                     break;
 
                 case "/unsubscribe":
                     weatherService.unsubscribeTelegram(chatId);
-                    response.setText("❌ Unsubscribed from weather updates");
+                    response.setText(" Unsubscribed from weather updates");
                     break;
 
                 case "/status":
-                    response.setText("📊 *System Status:*\n" +
+                    response.setText(" *System Status:*\n" +
                             "• Strategy: " + weatherService.getCurrentStrategy() + "\n" +
                             "• Subscribers: " + telegramService.getSubscriberCount());
                     break;
@@ -130,7 +130,7 @@ public class TelegramBotController extends TelegramLongPollingBot {
                     if (message.startsWith("/manual ")) {
                         handleManualCommand(message, response);
                     } else {
-                        response.setText("❓ Unknown command. Use /start to see available commands.");
+                        response.setText(" Unknown command. Use /start to see available commands.");
                     }
                     break;
             }
@@ -149,16 +149,16 @@ public class TelegramBotController extends TelegramLongPollingBot {
                 double hum = Double.parseDouble(parts[2]);
                 double press = Double.parseDouble(parts[3]);
                 manualStrategy.setManualData(temp, hum, press);
-                response.setText("✅ Manual data set:\n" +
+                response.setText(" Manual data set:\n" +
                         "• Temperature: " + temp + "°C\n" +
                         "• Humidity: " + hum + "%\n" +
                         "• Pressure: " + press + " hPa\n\n" +
                         "Use /current to see this data!");
             } catch (NumberFormatException e) {
-                response.setText("❌ Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+                response.setText("Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
             }
         } else {
-            response.setText("❌ Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+            response.setText(" Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
         }
     }
 }

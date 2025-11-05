@@ -12,19 +12,19 @@ public class WeatherService {
     private final RealTimeUpdateStrategy realTimeStrategy;
     private final ScheduledUpdateStrategy scheduledStrategy;
     private final ManualUpdateStrategy manualStrategy;
-    private final TelegramBotObserver telegramObserver; // Fixed type
-    private final TelegramService telegramService; // Add this
+    private final TelegramBotObserver telegramObserver;
+    private final TelegramService telegramService;
 
     public WeatherService(RealTimeUpdateStrategy realTimeStrategy,
                           ScheduledUpdateStrategy scheduledStrategy,
                           ManualUpdateStrategy manualStrategy,
                           TelegramBotObserver telegramObserver,
-                          TelegramService telegramService) { // Add this parameter
+                          TelegramService telegramService) {
         this.realTimeStrategy = realTimeStrategy;
         this.scheduledStrategy = scheduledStrategy;
         this.manualStrategy = manualStrategy;
-        this.telegramObserver = telegramObserver; // Fixed assignment
-        this.telegramService = telegramService; // Add this
+        this.telegramObserver = telegramObserver;
+        this.telegramService = telegramService;
 
         this.weatherStation = new WeatherStation(realTimeStrategy);
     }
@@ -59,11 +59,11 @@ public class WeatherService {
     }
 
     public void subscribeTelegram(Long chatId) {
-        telegramService.addSubscriber(chatId); // Use telegramService here
+        telegramService.addSubscriber(chatId);
     }
 
     public void unsubscribeTelegram(Long chatId) {
-        telegramService.removeSubscriber(chatId); // Use telegramService here
+        telegramService.removeSubscriber(chatId);
     }
 
     public String getCurrentStrategy() {

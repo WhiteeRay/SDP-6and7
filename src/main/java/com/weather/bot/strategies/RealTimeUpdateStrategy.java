@@ -7,7 +7,6 @@ import com.weather.bot.core.WeatherData;
 public class RealTimeUpdateStrategy implements UpdateStrategy {
     @Override
     public WeatherData fetchWeatherData() {
-        // Remove the System.out.println for cleaner output
         double temperature = 20 + (Math.random() * 10);
         double humidity = 40 + (Math.random() * 30);
         double pressure = 1013 + (Math.random() * 10);
