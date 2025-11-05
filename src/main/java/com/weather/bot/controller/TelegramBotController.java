@@ -73,19 +73,23 @@ public class TelegramBotController extends TelegramLongPollingBot {
         response.setChatId(chatId.toString());
 
         try {
-            // Trim and handle different command formats
+
             String trimmedMessage = message.trim().toLowerCase();
 
-            // Handle single word commands
             switch (trimmedMessage) {
                 case "/start":
                     response.setText("🌤️ *Welcome to Weather Bot!* 🌤️\n\n" +
                             "Available Commands:\n" +
                             "• /current - Get current weather\n" +
-                            "• /strategy_realtime - Switch to real-time updates\n" +
-                            "• /strategy_scheduled - Switch to scheduled updates\n" +
-                            "• /strategy_manual - Switch to manual updates\n" +
+                            "• /strategy realtime - Real-time updates\n" +
+                            "• /strategy scheduled - Scheduled updates\n" +
+                            "• /strategy manual - Manual updates\n" +
+                            "• /strategy cached - Cached real-time updates\n" +
+                            "• /station urban - Create urban station\n" +
+                            "• /station coastal - Create coastal station\n" +
                             "• /manual temp hum press - Set manual weather\n" +
+                            "• /cache clear - Clear weather cache\n" +
+                            "• /cache status - Show cache status\n" +
                             "• /subscribe - Subscribe to updates\n" +
                             "• /unsubscribe - Unsubscribe\n" +
                             "• /status - System status\n\n" +
@@ -111,6 +115,29 @@ public class TelegramBotController extends TelegramLongPollingBot {
                     response.setText("📊 *System Status:*\n" +
                             "• Strategy: " + weatherService.getCurrentStrategy() + "\n" +
                             "• Subscribers: " + telegramService.getSubscriberCount());
+                case "/strategy cached":
+                    weatherService.setStrategy("cached");
+                    response.setText("🔄 Switched to *Cached Real-time* strategy");
+                    break;
+
+                case "/station urban":
+                    weatherService.setStrategy("urban");
+                    response.setText("🏙️ Created *Urban* Weather Station");
+                    break;
+
+                case "/station coastal":
+                    weatherService.setStrategy("coastal");
+                    response.setText("🏖️ Created *Coastal* Weather Station");
+                    break;
+
+                case "/cache clear":
+                    weatherService.clearCache();
+                    response.setText("🗑️ Weather cache cleared!");
+                    break;
+
+                case "/cache status":
+                    weatherService.showCacheStatus();
+                    response.setText("📊 Fetching cache status...");
                     break;
 
                 default:
@@ -182,16 +209,16 @@ public class TelegramBotController extends TelegramLongPollingBot {
                 double hum = Double.parseDouble(parts[2]);
                 double press = Double.parseDouble(parts[3]);
                 manualStrategy.setManualData(temp, hum, press);
-                response.setText("✅ Manual data set:\n" +
+                response.setText(" Manual data set:\n" +
                         "• Temperature: " + temp + "°C\n" +
                         "• Humidity: " + hum + "%\n" +
                         "• Pressure: " + press + " hPa\n\n" +
                         "Use /current to see this data!");
             } catch (NumberFormatException e) {
-                response.setText("❌ Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+                response.setText(" Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
             }
         } else {
-            response.setText("❌ Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+            response.setText(" Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
         }
     }
 }
