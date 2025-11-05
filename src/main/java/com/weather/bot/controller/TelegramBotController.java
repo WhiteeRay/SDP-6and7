@@ -27,7 +27,6 @@ public class TelegramBotController extends TelegramLongPollingBot {
     private final ManualUpdateStrategy manualStrategy;
     private final TelegramService telegramService;
 
-
     public TelegramBotController(WeatherService weatherService,
                                  ManualUpdateStrategy manualStrategy,
                                  TelegramService telegramService) {
@@ -38,7 +37,6 @@ public class TelegramBotController extends TelegramLongPollingBot {
 
     @PostConstruct
     public void init() {
-
         telegramService.setBotController(this);
 
         try {
@@ -75,14 +73,18 @@ public class TelegramBotController extends TelegramLongPollingBot {
         response.setChatId(chatId.toString());
 
         try {
-            switch (message.toLowerCase()) {
+            // Trim and handle different command formats
+            String trimmedMessage = message.trim().toLowerCase();
+
+            // Handle single word commands
+            switch (trimmedMessage) {
                 case "/start":
                     response.setText("🌤️ *Welcome to Weather Bot!* 🌤️\n\n" +
                             "Available Commands:\n" +
                             "• /current - Get current weather\n" +
-                            "• /strategy realtime - Real-time updates\n" +
-                            "• /strategy scheduled - Scheduled updates\n" +
-                            "• /strategy manual - Manual updates\n" +
+                            "• /strategy_realtime - Switch to real-time updates\n" +
+                            "• /strategy_scheduled - Switch to scheduled updates\n" +
+                            "• /strategy_manual - Switch to manual updates\n" +
                             "• /manual temp hum press - Set manual weather\n" +
                             "• /subscribe - Subscribe to updates\n" +
                             "• /unsubscribe - Unsubscribe\n" +
@@ -95,42 +97,32 @@ public class TelegramBotController extends TelegramLongPollingBot {
                     response.setText("🔄 Fetching current weather data...");
                     break;
 
-                case "/strategy realtime":
-                    weatherService.setStrategy("realtime");
-                    response.setText("🔄 Switched to *Real-time* strategy");
-                    break;
-
-                case "/strategy scheduled":
-                    weatherService.setStrategy("scheduled");
-                    response.setText("🔄 Switched to *Scheduled* strategy");
-                    break;
-
-                case "/strategy manual":
-                    weatherService.setStrategy("manual");
-                    response.setText("🔄 Switched to *Manual* strategy");
-                    break;
-
                 case "/subscribe":
                     weatherService.subscribeTelegram(chatId);
-                    response.setText(" Subscribed to weather updates! You'll receive regular weather updates.");
+                    response.setText("✅ Subscribed to weather updates! You'll receive regular weather updates.");
                     break;
 
                 case "/unsubscribe":
                     weatherService.unsubscribeTelegram(chatId);
-                    response.setText(" Unsubscribed from weather updates");
+                    response.setText("❌ Unsubscribed from weather updates");
                     break;
 
                 case "/status":
-                    response.setText(" *System Status:*\n" +
+                    response.setText("📊 *System Status:*\n" +
                             "• Strategy: " + weatherService.getCurrentStrategy() + "\n" +
                             "• Subscribers: " + telegramService.getSubscriberCount());
                     break;
 
                 default:
-                    if (message.startsWith("/manual ")) {
-                        handleManualCommand(message, response);
+                    // Handle multi-word commands
+                    if (trimmedMessage.startsWith("/strategy ")) {
+                        handleStrategyCommand(trimmedMessage, response);
+                    } else if (trimmedMessage.startsWith("/manual ")) {
+                        handleManualCommand(trimmedMessage, response);
+                    } else if (trimmedMessage.startsWith("/strategy_")) {
+                        handleUnderscoreStrategyCommand(trimmedMessage, response);
                     } else {
-                        response.setText(" Unknown command. Use /start to see available commands.");
+                        response.setText("❓ Unknown command. Use /start to see available commands.");
                     }
                     break;
             }
@@ -138,6 +130,47 @@ public class TelegramBotController extends TelegramLongPollingBot {
             execute(response);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handleStrategyCommand(String message, SendMessage response) {
+        String[] parts = message.split(" ");
+        if (parts.length == 2) {
+            String strategy = parts[1].toLowerCase();
+            switch (strategy) {
+                case "realtime":
+                    weatherService.setStrategy("realtime");
+                    response.setText("🔄 Switched to *Real-time* strategy");
+                    break;
+                case "scheduled":
+                    weatherService.setStrategy("scheduled");
+                    response.setText("🔄 Switched to *Scheduled* strategy");
+                    break;
+                case "manual":
+                    weatherService.setStrategy("manual");
+                    response.setText("🔄 Switched to *Manual* strategy");
+                    break;
+                default:
+                    response.setText("❌ Unknown strategy. Use: realtime, scheduled, or manual");
+                    break;
+            }
+        } else {
+            response.setText("❌ Invalid format. Use: /strategy realtime  OR  /strategy_scheduled");
+        }
+    }
+
+    private void handleUnderscoreStrategyCommand(String message, SendMessage response) {
+        if (message.equals("/strategy_realtime")) {
+            weatherService.setStrategy("realtime");
+            response.setText("🔄 Switched to *Real-time* strategy");
+        } else if (message.equals("/strategy_scheduled")) {
+            weatherService.setStrategy("scheduled");
+            response.setText("🔄 Switched to *Scheduled* strategy");
+        } else if (message.equals("/strategy_manual")) {
+            weatherService.setStrategy("manual");
+            response.setText("🔄 Switched to *Manual* strategy");
+        } else {
+            response.setText("❌ Unknown strategy command. Use: /strategy_realtime, /strategy_scheduled, or /strategy_manual");
         }
     }
 
@@ -149,16 +182,16 @@ public class TelegramBotController extends TelegramLongPollingBot {
                 double hum = Double.parseDouble(parts[2]);
                 double press = Double.parseDouble(parts[3]);
                 manualStrategy.setManualData(temp, hum, press);
-                response.setText(" Manual data set:\n" +
+                response.setText("✅ Manual data set:\n" +
                         "• Temperature: " + temp + "°C\n" +
                         "• Humidity: " + hum + "%\n" +
                         "• Pressure: " + press + " hPa\n\n" +
                         "Use /current to see this data!");
             } catch (NumberFormatException e) {
-                response.setText("Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+                response.setText("❌ Invalid numbers. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
             }
         } else {
-            response.setText(" Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
+            response.setText("❌ Invalid format. Use: /manual temperature humidity pressure\nExample: /manual 25 60 1015");
         }
     }
 }
